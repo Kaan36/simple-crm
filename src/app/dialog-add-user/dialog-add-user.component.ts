@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { MatFormFieldControl } from '@angular/material/form-field';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { MatDialogRef } from '@angular/material/dialog';
+import { User } from 'src/models/user.class';
 
 @Component({
   selector: 'app-dialog-add-user',
@@ -7,12 +9,25 @@ import { MatFormFieldControl } from '@angular/material/form-field';
   styleUrls: ['./dialog-add-user.component.scss']
 })
 export class DialogAddUserComponent implements OnInit {
-  
-  name: string = '';
 
-  constructor() { }
+  user = new User();
+  birthDate: Date;
+  loading: boolean = false;
+
+  constructor(public dialogRef: MatDialogRef<DialogAddUserComponent>, private firestore: AngularFirestore) { }
 
   ngOnInit(): void {
+  }
+
+  saveUser() {
+    //this.user.birthDate = this.birthDate.getTime();
+    console.log('Current user', this.user)
+    this.loading = true;
+    this.firestore.collection('users').add(this.user.toJSON()).then((result: any) => {
+      console.log('Adding user finished', result);
+      this.loading = false;
+      this.dialogRef.close();
+    });
   }
 
 }
